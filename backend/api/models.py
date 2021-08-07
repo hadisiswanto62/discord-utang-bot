@@ -12,6 +12,7 @@ class UserModel(models.Model):
 
 class TransactionGroup(models.Model):
     desc = models.TextField()
+    receiver = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 

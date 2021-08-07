@@ -20,9 +20,21 @@ class UserSerializer(serializers.ModelSerializer):
 
 class TransactionGroupSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
+    receiver = UserSerializer(read_only=True)
     class Meta:
         model = TransactionGroup
-        fields = ('id', 'desc', 'is_paid')
+        fields = ('id', 'desc', 'receiver', 'is_paid')
+
+    def create(self, validated_data):
+        request = self.context.get('request', None)
+        if request is None:
+            raise serializers.ValidationError('Internal error: request data is not passed to the serializer')
+
+        return TransactionGroup.objects.create(
+            desc=validated_data["desc"],
+            receiver=request.user.usermodel
+        )
+
 
 class TransactionSerializer(serializers.ModelSerializer):
     sender = UserSerializer(read_only=True)
